@@ -1,0 +1,90 @@
+body {
+    margin: 0px;
+    font-family: sans-serif;
+    overflow: hidden;
+}
+
+/* MAP */
+
+.sphere {
+    fill: #C2DFFF;
+}
+
+.state,
+.county {
+    fill: #C1E1C1;
+    stroke: white;
+    stroke-width: 1px;
+}
+
+.county {
+    stroke-width: 0.1px;
+}
+
+.call {
+    stroke: grey;
+    stroke-width: 0.01px;
+}
+
+.call:hover {
+    stroke: black;
+    stroke-width: 0.05px;
+}
+
+/* LEGEND */
+
+.legend-bg {
+    fill: white;
+    opacity: 0.7;
+}
+
+.legend text {
+    font-family: sans-serif;
+    font-size: 1em;
+    fill: #635F5D;
+    text-anchor: start;
+    dominant-baseline: central;
+}
+
+.legend circle {
+    stroke: #333;
+    stroke-opacity: 0.5;
+}
+
+.legend {
+    cursor: pointer;
+}
+
+.range-label {
+    font-family: sans-serif;
+    font-size: 1em;
+    fill: #635F5D;
+    dominant-baseline: central;
+}
+
+#tooltip {
+    position: absolute;
+    display: none;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 3px 3px 3px 0px rgb(92 92 92 / 0.5);
+    border: 1px solid #ddd;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 8px;
+    color: #333;
+}
+
+.tooltip-title {
+    color: #000;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Area chart tooltips */
+
+.tooltip-circles {
+    fill: none;
+    stroke:black;
+    stroke-width: 1px;
+}
