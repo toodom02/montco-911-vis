@@ -3,12 +3,16 @@ export const loadAndProcessData = () =>
     .all([
       d3.json('./data/states-albers-10m.json'),
       d3.json('./data/PaCounty.geojson'),
+      d3.json('./data/Montgomery_County_Municipal_Boundaries.geojson'),
       d3.csv('./data/911.csv')
     ])
-    .then(([topoData, countyData, csvData]) => {      
+    .then(([topoData, countyData, municipalData, csvData]) => {      
       // Conversion from TopoJSON to GeoJSON
       const states = topojson.feature(topoData, topoData.objects.states);
-      const counties = countyData;
+      // Capitalise municipal names
+      municipalData.features.forEach(d => {
+        d.properties.Name = d.properties.Name.toUpperCase().replace('TWP','TOWNSHIP');
+      })
       // Parse CSV data 
       csvData.forEach(d => {
         d.timeStamp = new Date(d.timeStamp);
@@ -17,9 +21,9 @@ export const loadAndProcessData = () =>
         let title = d.title.split(':');
         d.type = title[0].trim();
         d.reason = title[1].replace('-','').trim().toUpperCase();
-      });
+      });   
 
       // Return array containing GeoJSONs and csv data
-      return [states, counties, csvData];
+      return [states, countyData, municipalData, csvData];
     });
 

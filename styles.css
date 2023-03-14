@@ -54,6 +54,16 @@ body {
     stroke-width: 0.1px;
 }
 
+.municipality {
+    stroke: lightgrey;
+    stroke-width: 0.01px;
+}
+
+.municipality:hover {
+    stroke: black;
+    stroke-width: 0.02px;
+}
+
 .call {
     stroke: grey;
     stroke-width: 0.01px;
@@ -62,6 +72,12 @@ body {
 .call:hover {
     stroke: black;
     stroke-width: 0.05px;
+}
+
+.radio-selector {
+    font-family: sans-serif;
+    font-size: 1em;
+    dominant-baseline: central;
 }
 
 /* LEGEND */

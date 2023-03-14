@@ -32,14 +32,20 @@ const onPieOptionSelected = event => {
   updateVis();
 }
 
+const onMapOptionSelected = event => {
+  mapOption = event.target.value;
+  updateVis();
+}
+
 // select all our SVGs
 const svgMap = d3.select('svg#map');
 const svgArea = d3.select('svg#area');
 const svgPie = d3.select('svg#pie');
 
 // initialise globals
-let states, counties, callData, dateRange, selectedReason;
+let states, counties, municipalities, callData, dateRange, selectedReason;
 let pieOption = 'range';
+let mapOption = 'regional';
 const types = ['Fire','EMS','Traffic'];
 const selectedTypes = types.reduce((o, key) => ({ ...o, [key]: true}), {});
 
@@ -60,12 +66,14 @@ const symbolScale = d3.scaleOrdinal()
 const updateVis = () => {
 
   svgMap.call(statesMap, {
-    margin: { top: 50, bottom: 80, left: 150, right: 40 },
     states,
     counties,
+    municipalities,
     data : callData,
     selectedTypes,
     selectedReason,
+    mapOption,
+    onMapOptionSelected,
     dateRange,
     colourScale,
     colourValue: d => d.type,
@@ -107,7 +115,8 @@ const updateVis = () => {
 loadAndProcessData().then(loadedData => {
   states = loadedData[0];
   counties = loadedData[1];
-  callData = loadedData[2];
+  municipalities = loadedData[2];
+  callData = loadedData[3];
   const date = new Date(callData[0].timeStamp.getFullYear(), callData[0].timeStamp.getMonth(), callData[0].timeStamp.getDate());
   dateRange = [date, date];
   updateVis();

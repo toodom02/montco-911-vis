@@ -1,110 +1,114 @@
+import { choroplethMap } from "./choroplethMap.js";
+import { pointsMap } from "./pointsMap.js";
+
 export const statesMap = (parent, props) => {
-    const { 
-      margin,
-      states,
-      counties,
-      data,
-      dateRange,
-      selectedTypes,
-      selectedReason,
-      colourScale,
-      colourValue,
-      symbolScale
-    } = props;
-  
-    const width  = +parent.attr('width');
-    const height = +parent.attr('height');
-  
-    // filter our data by date & selection
-    const filteredData = data.filter(d => {
-      // new date to ignore time
-      const date = new Date(d.timeStamp.getFullYear(), d.timeStamp.getMonth(), d.timeStamp.getDate());
-      return selectedTypes[d.type] && 
-      (!selectedReason || d.reason === selectedReason) && 
-      date >= dateRange[0] && date <= dateRange[1]
-    });
-  
-    // Define projection and pathGenerator
-    const projection = d3.geoAlbersUsa()
-    const pathGenerator = d3.geoPath().projection(projection);
-  
-    const chart = parent.selectAll('.map-container').data([null]);
-    const chartEnter = chart.enter().append('g')
-      .attr('class', 'map-container');
+  const {
+    states,
+    counties,
+    municipalities,
+    data,
+    dateRange,
+    selectedTypes,
+    selectedReason,
+    mapOption,
+    onMapOptionSelected,
+    colourScale,
+    colourValue,
+    symbolScale
+  } = props;
 
-    // Zoom interactivity
-    const zoom = d3.zoom()
-      .scaleExtent([1, 75])
-      .translateExtent([[0, 0], [width, height]])
-      .on('zoom', event => chartEnter.attr('transform', event.transform));
+  const width  = +parent.attr('width');
+  const height = +parent.attr('height');
 
-    chartEnter.call(zoom);
+  // filter our data by date & selection
+  const filteredData = data.filter(d => {
+    // new date to ignore time
+    const date = new Date(d.timeStamp.getFullYear(), d.timeStamp.getMonth(), d.timeStamp.getDate());
+    return selectedTypes[d.type] && 
+    (!selectedReason || d.reason === selectedReason) && 
+    date >= dateRange[0] && date <= dateRange[1]
+  });
 
-    chartEnter
-      .transition().duration(5000)
-        .call(zoom.transform, d3.zoomIdentity.translate(-38400,-9250).scale(50));
+  // Define projection and pathGenerator
+  const projection = d3.geoAlbersUsa()
+  const pathGenerator = d3.geoPath().projection(projection);
 
-    // Group for map elements
-    const mapG = chart.select('.map');
-    const mapGEnter = chartEnter.append('g')
-      .attr('class','map');
-  
-    // Earth's border (click to reset zoom)
-    mapGEnter.append('path')
-      .attr('class', 'sphere')
-      .attr('d', pathGenerator({type: 'Sphere'}))
-      .on('click', () => 
-        chartEnter.transition().duration(750).call(
-          zoom.transform,
-          d3.zoomIdentity.translate(-38400,-9250).scale(50)
-        ));
-  
-    // Paths for states
-    mapGEnter.merge(mapG).selectAll('.state').data(states.features)
-      .join('path')
-        .attr('class','state')
-        .attr('d', pathGenerator);
+  const g = parent.selectAll('.parent-g').data([null]);
+  const gEnter = g.enter().append('g')
+    .attr('class', 'parent-g');
 
-    // Paths for counties
-    mapGEnter.merge(mapG).selectAll('.county').data(counties.features)
-      .join('path')
-        .attr('class','county')
-        .attr('d', pathGenerator);
+  const chart = gEnter.append('g')
+    .attr('class', 'map-container');
 
-    // 911 Calls
-    const calls = chartEnter.merge(chart).selectAll('.call').data(filteredData, d=>d);
-    const callsEnter = calls.enter()
-      .append('path')
-      .attr('class', 'call')
-      .attr('opacity', 0)
-    callsEnter.merge(calls)
-      .attr('transform', d => `translate(${projection([d.lng, d.lat])[0]}, ${projection([d.lng, d.lat])[1]})`)
-      .attr('d', d => symbolScale(colourValue(d)))
-      .attr('fill', d => colourScale(colourValue(d)))
-      .attr('stroke-width', 0.05)
-      .transition().duration(1000)
-        .attr('opacity', 1);
-    calls.exit()
-      .transition().duration(1000)
-        .attr('opacity', 0)
-      .remove();
+  // Zoom interactivity
+  const zoom = d3.zoom()
+    .scaleExtent([1, 100])
+    .translateExtent([[0, 0], [width, height]])
+    .on('zoom', event => chart.attr('transform', event.transform));
 
-    // Tooltip event listeners
-    const tooltipPadding = 15;
-    callsEnter
-      .on('mouseover', (event, d) => {
-        d3.select('#tooltip')
-          .style('display', 'block')
-          .style('left', (event.pageX + tooltipPadding) + 'px')   
-          .style('top', (event.pageY + tooltipPadding) + 'px')
-          .html(`
-            <div class="tooltip-title">${d.type}: ${d.reason}</div>
-            <div><i class="tooltip-i">${d.timeStamp.toLocaleString("en-gb")}</i></div>
-          `);
+  gEnter.call(zoom);
+
+  // Zoom to initial position
+  gEnter
+    .transition().duration(5000)
+      .call(zoom.transform, d3.zoomIdentity.translate(-38400,-9250).scale(50));
+
+  // Group for map elements
+  const mapG = chart.append('g')
+    .attr('class','map');
+
+  // Earth's border (click to reset zoom)
+  mapG.append('path')
+    .attr('class', 'sphere')
+    .attr('d', pathGenerator({type: 'Sphere'}))
+    .on('click', () => 
+      gEnter.transition().duration(750).call(
+        zoom.transform,
+        d3.zoomIdentity.translate(-38400,-9250).scale(50)
+      ));
+
+  // Paths for states
+  mapG.merge(g).selectAll('.state').data(states.features)
+    .join('path')
+      .attr('class','state')
+      .attr('d', pathGenerator);
+
+  // Paths for counties
+  mapG.merge(g).selectAll('.county').data(counties.features)
+    .join('path')
+      .attr('class','county')
+      .attr('d', pathGenerator);
+
+  // Listener for radio button
+  d3.selectAll('input[name="map-type"]').on('change', onMapOptionSelected);
+
+  const pointsG = chart.merge(g).selectAll('.points-g').data([null]);
+  const pointsGEnter = pointsG.enter().append('g')
+      .attr('class', 'points-g')
+
+  // depending on selection, call appropriate map plot and delete previous
+  if (mapOption==='points') {
+    pointsG.selectAll('.municipality').remove();
+    pointsGEnter.merge(pointsG).call(
+      pointsMap, {
+        filteredData,
+        projection,
+        symbolScale,
+        colourScale,
+        colourValue,
+        pointsG,
+        pointsGEnter
       })
-      .on('mouseleave', () => {
-        d3.select('#tooltip').style('display', 'none');
-      });
-
+  } else {
+    pointsG.selectAll('.call').remove();
+    pointsGEnter.merge(pointsG).call(
+      choroplethMap, {
+        filteredData,
+        selectedTypes,
+        municipalities,
+        pathGenerator,
+        colourScale
+      })
+  }
 }
   

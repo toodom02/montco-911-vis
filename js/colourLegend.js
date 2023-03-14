@@ -61,7 +61,7 @@ export const colourLegend = (parent, props) => {
 
   textEnterText
     .merge(textEnter)
-      .text(`${dateRange[0].toLocaleString("en-gb", {day:"numeric", month:"numeric", year:"numeric"})} - ${dateRange[1].toLocaleString("en-gb", {day:"numeric", month:"numeric", year:"numeric"})}`);
+      .text(`${dateRange[0].toLocaleString("en-gb", {day:'numeric', month:'numeric', year:'numeric'})} - ${dateRange[1].toLocaleString("en-gb", {day:'numeric', month:'numeric', year:'numeric'})}`);
 
 }
 

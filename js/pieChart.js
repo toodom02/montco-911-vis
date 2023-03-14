@@ -15,7 +15,7 @@ const makePie = (parent, props) => {
   const chart = parent.selectAll(`#pie-${data[0]}`).data([null]);
   const chartEnter = chart.enter().append('g')
     .attr('id', `pie-${data[0]}`)
-    .attr("transform", `translate(${position[0]},${position[1]})`);
+    .attr('transform', `translate(${position[0]},${position[1]})`);
 
   // add text to center
   chartEnter.append('text')
@@ -83,7 +83,7 @@ export const pieChart = (parent, props) => {
   groupedData = groupedData.map(t => [t[0],d3.groups(t[1], d => d.reason)]);
 
   // Filter our dates if we only want range
-  if (pieOption === "range") {
+  if (pieOption === 'range') {
     groupedData = groupedData.map(t => 
       [t[0], t[1].map(s => 
         [s[0], s[1].filter(d => {

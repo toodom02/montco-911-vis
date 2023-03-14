@@ -11,7 +11,13 @@
       <h1>Emergency - 911 Calls: Montgomery County, PA</h1>
       <div class="svg-container">
         <div class="map-area-container">
-          <svg id="map" width="960" height="500"></svg>
+          <div class="radio-selector">
+            <input type="radio" id="regional" name="map-type" value="regional" checked>
+            <label for="regional">Regional</label>
+            <input type="radio" id="points" name="map-type" value="points">
+            <label for="points">Points</label>
+              <svg id="map" width="960" height="500"></svg>
+          </div>
           <svg id="area" width="960" height="150"></svg>
         </div>
         <div class="pie-chart-container">
@@ -26,7 +32,13 @@
         </div>
       </div>
       <div class="source">
-        Source: Data from <a href="https://doi.org/10.7910/DVN/X8Q4YA">dataverse.harvard.edu</a>
+        Source: 911 Data from <a href="https://doi.org/10.7910/DVN/X8Q4YA">dataverse.harvard.edu</a>
+        <br/>
+        Source: Municipal Boundary Data from <a href="https://data-montcopa.opendata.arcgis.com/datasets/montcopa::montgomery-county-municipal-boundaries/explore">data-montcopa.opendata.arcgis.com</a>
+        <br/>
+        Source: County Boundary Data from <a href="https://www.pasda.psu.edu/uci/DataSummary.aspx?dataset=24">pasda.psu.edu</a>
+        <br/>
+        Source: US Albers State Data from <a href="https://github.com/topojson/us-atlas">Census Bureau</a>
       </div>
     </div>
     <div id="tooltip"></div>

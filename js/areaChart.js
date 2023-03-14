@@ -125,14 +125,14 @@ export const areaChart = (parent, props) => {
   const tooltip = d3.select('#tooltip');
 
   // rectangle to capture mouse (reusing the rect created by Brush)
-  d3.select("rect.overlay")
-    .attr("width", innerWidth)
-    .attr("height", innerHeight)
-    .style("fill", "none")
-    .style("pointer-events", "all")
-    .on("mouseenter", () => {circlesGEnter.attr('display', 'block'); tooltip.style('display', 'block')})
-    .on("mouseleave", () => {tooltip.style('display', 'none'); circlesGEnter.attr('display', 'none')})
-    .on("mousemove", event => {
+  d3.select('rect.overlay')
+    .attr('width', innerWidth)
+    .attr('height', innerHeight)
+    .style('fill', 'none')
+    .style('pointer-events', 'all')
+    .on('mouseenter', () => {circlesGEnter.attr('display', 'block'); tooltip.style('display', 'block')})
+    .on('mouseleave', () => {tooltip.style('display', 'none'); circlesGEnter.attr('display', 'none')})
+    .on('mousemove', event => {
       const x0 = xScale.invert(d3.pointer(event)[0]);
       const getClosest = (i) => {
         // find closest data point to mouse xpos
@@ -152,8 +152,8 @@ export const areaChart = (parent, props) => {
           .style('left', (event.pageX + tooltipPadding) + 'px')   
           .style('top', (event.pageY + tooltipPadding) + 'px')
           .html(`
-            <div class="tooltip-title">${d[0].data[0].toLocaleString("en-gb", {day:"numeric", month:"long", year:"numeric"})}</div>
-            <div><i class="tooltip-i">${!!selectedReason ? selectedTypesArr[0] + " - " + selectedReason : ''}</i></div>
+            <div class="tooltip-title">${d[0].data[0].toLocaleString("en-gb", {day:'numeric', month:'long', year:'numeric'})}</div>
+            <div><i class="tooltip-i">${!!selectedReason ? selectedTypesArr[0] + ' - ' + selectedReason : ''}</i></div>
             <div><i class="tooltip-i">${d[0].data[1]['Traffic']} Traffic calls</i></div>
             <div><i class="tooltip-i">${d[0].data[1]['EMS']} EMS calls</i></div>
             <div><i class="tooltip-i">${d[0].data[1]['Fire']} Fire calls</i></div>
