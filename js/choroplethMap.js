@@ -5,6 +5,7 @@ export const choroplethMap = (parent, props) => {
     const {
       filteredData,
       selectedTypes,
+      selectedReason,
       municipalities,
       pathGenerator,
       colourScale
@@ -54,6 +55,7 @@ export const choroplethMap = (parent, props) => {
         d3.select('#tooltip')
           .html(`
           <div class="tooltip-title">${d.properties.Name}</div>
+          ${selectedReason ? '<div><i class="tooltip-i">' + selectedReason + '</i></div>' : ''}
           <div>${barData ?'<svg id="tooltip-svg" width="150" height="150"></svg>' : 'No Calls'}</div>
           `);
         if (!barData) return;
@@ -61,7 +63,7 @@ export const choroplethMap = (parent, props) => {
         const svg = d3.select('#tooltip-svg');
         svg.call(barChart, {
           data: barData[1], 
-          margin: { top: 5, bottom: 25, left: 35, right: 5 },
+          margin: { top: 5, bottom: 25, left: 30, right: 5 },
           xValue: d => d[0],
           xTickLabels: Object.keys(selectedTypes),
           yValue: d => d[1].length,

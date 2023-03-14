@@ -33,6 +33,12 @@ const onPieOptionSelected = event => {
 }
 
 const onMapOptionSelected = event => {
+  // If change is cancelled, reset checked value
+  if (event.target.value === 'points' && !confirm("Warning: a large range will run slowly")) {
+    event.target.checked = false;
+    d3.select('input#regional').property('checked', true);
+    return
+  };
   mapOption = event.target.value;
   updateVis();
 }

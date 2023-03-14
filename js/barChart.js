@@ -4,8 +4,7 @@ export const barChart = (parent, props) => {
     margin,
     xValue, 
     xTickLabels,
-    yValue, 
-    yAxisLabel,
+    yValue,
     colourScale,
   } = props;
 
@@ -14,7 +13,7 @@ export const barChart = (parent, props) => {
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
-  // Chart taking care of inner margins
+  // Chart group
   const chart = parent.selectAll('.barchart').data([null]);
   const chartEnter = chart
     .enter().append('g')
@@ -23,7 +22,7 @@ export const barChart = (parent, props) => {
 
   // Initialise scales
   const xScale = d3.scaleBand()
-    .domain(data.map(xValue))
+    .domain(colourScale.domain())
     .range([0, innerWidth])
     .paddingInner(0.2);
 
@@ -38,8 +37,10 @@ export const barChart = (parent, props) => {
     .tickPadding(5);
   
   const yAxis = d3.axisLeft(yScale)
+    .tickValues(yScale.ticks(6).filter(Number.isInteger))
     .tickSizeOuter(0)
-    .ticks(4);
+    .ticks(4)
+    .tickFormat(d3.format('d'))
 
   // Append empty x-axis group and move it to the bottom of the chart
   const xAxisG = chartEnter
@@ -53,14 +54,6 @@ export const barChart = (parent, props) => {
     .append('g')
       .attr('class','axis y-axis');
   yAxisG.call(yAxis);
-
-  // Append y-axis title
-  yAxisG
-    .append('text')
-      .attr('class', 'axis-title')
-      .attr('x', 25)
-      .attr('y', -25)
-      .text(yAxisLabel);
     
   // Plot data
   const bars = chartEnter.merge(chart)

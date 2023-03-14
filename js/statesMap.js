@@ -80,7 +80,8 @@ export const statesMap = (parent, props) => {
       .attr('d', pathGenerator);
 
   // Listener for radio button
-  d3.selectAll('input[name="map-type"]').on('change', onMapOptionSelected);
+  d3.selectAll('input[name="map-type"]')
+    .on('change', onMapOptionSelected);
 
   const pointsG = chart.merge(g).selectAll('.points-g').data([null]);
   const pointsGEnter = pointsG.enter().append('g')
@@ -105,6 +106,7 @@ export const statesMap = (parent, props) => {
       choroplethMap, {
         filteredData,
         selectedTypes,
+        selectedReason,
         municipalities,
         pathGenerator,
         colourScale

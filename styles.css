@@ -17,6 +17,14 @@ body {
     width: min-content;
 }
 
+.radio-selection {
+    padding-bottom: 1rem;
+}
+
+#pie-selector {
+    padding: 0.5rem 0;
+}
+
 .pie-chart-container {
     display: flex;
     flex-direction: column;
