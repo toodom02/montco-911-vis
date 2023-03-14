@@ -2,7 +2,7 @@ export const colourLegend = (parent, props) => {
   const { 
     colourScale, 
     onSelect,
-    selectedValues,
+    selectedTypes,
     dateRange
   } = props;
 
@@ -41,15 +41,15 @@ export const colourLegend = (parent, props) => {
     .merge(circle)
       .attr('fill', colourScale)
       .attr('r', circleRadius)
-      .attr('fill-opacity', d => selectedValues[d] ? 1 : 0.2)
-      .attr('opacity', d => selectedValues[d] ? 1 : 0.2);
+      .attr('fill-opacity', d => selectedTypes[d] ? 1 : 0.2)
+      .attr('opacity', d => selectedTypes[d] ? 1 : 0.2);
 
   const text = groups.select('text');
   groupsEnter.append('text')
     .merge(text)
       .text(d => d)
       .attr('x', textOffset)
-      .attr('opacity', d => selectedValues[d] ? 1 : 0.2);
+      .attr('opacity', d => selectedTypes[d] ? 1 : 0.2);
 
   // title with date range
   const textEnterText = g.select('.range-label');

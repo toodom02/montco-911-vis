@@ -5,7 +5,8 @@ export const statesMap = (parent, props) => {
       counties,
       data,
       dateRange,
-      selectedValues,
+      selectedTypes,
+      selectedReason,
       colourScale,
       colourValue,
       symbolScale
@@ -15,11 +16,16 @@ export const statesMap = (parent, props) => {
     const height = +parent.attr('height');
   
     // filter our data by date & selection
-    const filteredData = data.filter(d => selectedValues[d.type] && d.timeStamp >= dateRange[0] && d.timeStamp <= dateRange[1]);
+    const filteredData = data.filter(d => {
+      // new date to ignore time
+      const date = new Date(d.timeStamp.getFullYear(), d.timeStamp.getMonth(), d.timeStamp.getDate());
+      return selectedTypes[d.type] && 
+      (!selectedReason || d.reason === selectedReason) && 
+      date >= dateRange[0] && date <= dateRange[1]
+    });
   
     // Define projection and pathGenerator
     const projection = d3.geoAlbersUsa()
-      // .scale(45000).translate([-12100,2750]);
     const pathGenerator = d3.geoPath().projection(projection);
   
     const chart = parent.selectAll('.map-container').data([null]);

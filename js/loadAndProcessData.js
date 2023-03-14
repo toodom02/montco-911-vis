@@ -17,12 +17,9 @@ export const loadAndProcessData = () =>
         let title = d.title.split(':');
         d.type = title[0].trim();
         d.reason = title[1].replace('-','').trim().toUpperCase();
-        d.e = d.e == 1;
       });
 
-      console.log(csvData)
-
-      // Return array containing GeoJSON and symbols data
+      // Return array containing GeoJSONs and csv data
       return [states, counties, csvData];
     });
 

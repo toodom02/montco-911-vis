@@ -6,7 +6,7 @@ export const areaChart = (parent, props) => {
     types,
     margin,
     onSelectRange,
-    selectedValues
+    selectedTypes
   } = props;
 
   const width = +parent.attr('width');
@@ -14,7 +14,7 @@ export const areaChart = (parent, props) => {
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
-  const selectedTypes = Object.keys(selectedValues).filter(key => selectedValues[key]);
+  const selectedTypesArr = Object.keys(selectedTypes).filter(key => selectedTypes[key]);
 
   const xValue = d => d.data[0];
   const yValue = d => d[1];
@@ -31,7 +31,7 @@ export const areaChart = (parent, props) => {
 
   // stack data
   const stack = d3.stack()
-    .keys(selectedTypes)
+    .keys(selectedTypesArr)
     .value((d,key) => d[1][key]);
 
   const stackedData = stack(groupedData);
@@ -117,7 +117,7 @@ export const areaChart = (parent, props) => {
     .attr('display', 'none')
     .style('pointer-events', 'none');
 
-  const circles = circlesGEnter.merge(circlesG).selectAll('circle').data(selectedTypes);
+  const circles = circlesGEnter.merge(circlesG).selectAll('circle').data(selectedTypesArr);
   circles.join('circle')
     .attr('id', d => d)
     .attr('r', 4);
@@ -142,13 +142,13 @@ export const areaChart = (parent, props) => {
         const d1 = stackedData[i][index];
         return d1 && x0 - xValue(d0) > xValue(d1) - x0 ? d1 : d0;
       }
-      const d = selectedTypes.map((e,i) => getClosest(i));
+      const d = selectedTypesArr.map((e,i) => getClosest(i));
       // move the group to that position on chart
-      selectedTypes.forEach((e,i) => 
+      selectedTypesArr.forEach((e,i) => 
         d3.select(`#${e}`).attr('transform', `translate(${xScale(xValue(d[i]))},${yScale(yValue(d[i]))})`)
       )
       // Tooltip info
-      if (selectedTypes.length > 0) {
+      if (selectedTypesArr.length > 0) {
         tooltip
           .style('left', (event.pageX + tooltipPadding) + 'px')   
           .style('top', (event.pageY + tooltipPadding) + 'px')

@@ -1,14 +1,34 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>World developed regions</title>
+    <title>MontCo 911 Calls</title>
     <link rel="stylesheet" href="./styles.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/topojson@3.0.2/dist/topojson.min.js"></script>
   </head>
   <body>
-    <svg id="map" width="960" height="500"></svg>
-    <svg id="area" width="960" height="150"></svg>
+    <div class="container">
+      <h1>Emergency - 911 Calls: Montgomery County, PA</h1>
+      <div class="svg-container">
+        <div class="map-area-container">
+          <svg id="map" width="960" height="500"></svg>
+          <svg id="area" width="960" height="150"></svg>
+        </div>
+        <div class="pie-chart-container">
+          <span id="pie-selector" title="Select whether pie charts show total data, or only the selected time range">
+            Pie Data:
+            <select>
+              <option value="total">Total</option>
+              <option value="range">Range</option>
+            </select>
+          </span>
+          <svg id="pie" width="500" height="500"></svg>
+        </div>
+      </div>
+      <div class="source">
+        Source: Data from <a href="https://doi.org/10.7910/DVN/X8Q4YA">dataverse.harvard.edu</a>
+      </div>
+    </div>
     <div id="tooltip"></div>
     <script src="./js/index.js" type="module"></script>
   </body>

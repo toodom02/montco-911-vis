@@ -2,9 +2,22 @@ import { loadAndProcessData } from './loadAndProcessData.js'
 import { statesMap } from './statesMap.js'
 import { colourLegend } from './colourLegend.js';
 import { areaChart } from './areaChart.js';
+import { pieChart } from './pieChart.js';
 
 const onSelectType = (event, d) => {
-  selectedValues[d] = !selectedValues[d];
+  selectedTypes[d] = !selectedTypes[d];
+  selectedReason = null;
+  updateVis();
+}
+
+const onSelectReason = (event, d) => {
+  if (selectedReason === d.data[0]) {
+    selectedReason = null;
+    Object.keys(selectedTypes).forEach(key => selectedTypes[key] = true)
+  } else {
+    selectedReason = d.data[0];
+    Object.keys(selectedTypes).forEach(key => selectedTypes[key] = d.data[1][0].type === key);
+  }
   updateVis();
 }
 
@@ -14,11 +27,21 @@ const onSelectRange = (start,end) => {
   updateVis();
 }
 
+const onPieOptionSelected = event => {
+  pieOption = event.target.value;
+  updateVis();
+}
+
+// select all our SVGs
 const svgMap = d3.select('svg#map');
 const svgArea = d3.select('svg#area');
-let states, counties, callData, dateRange;
+const svgPie = d3.select('svg#pie');
 
+// initialise globals
+let states, counties, callData, dateRange, selectedReason, pieOption;
 const types = ['Fire','EMS','Traffic'];
+const selectedTypes = types.reduce((o, key) => ({ ...o, [key]: true}), {});
+
 // Colour scale (shared between views)
 const colourScale = d3.scaleOrdinal()
   .range(['#fe4a49', '#2ab7ca', '#fed766'])
@@ -33,8 +56,6 @@ const symbolScale = d3.scaleOrdinal()
     d3.symbol().type(d3.symbolDiamond).size(0.02)()
   ]);
 
-let selectedValues = types.reduce((o, key) => ({ ...o, [key]: true}), {})
-
 const updateVis = () => {
 
   svgMap.call(statesMap, {
@@ -42,7 +63,8 @@ const updateVis = () => {
     states,
     counties,
     data : callData,
-    selectedValues,
+    selectedTypes,
+    selectedReason,
     dateRange,
     colourScale,
     colourValue: d => d.type,
@@ -52,7 +74,7 @@ const updateVis = () => {
   svgMap.call(colourLegend, {
     colourScale,
     onSelect : onSelectType,
-    selectedValues,
+    selectedTypes,
     dateRange
   })
 
@@ -62,7 +84,19 @@ const updateVis = () => {
     types,
     margin: {top: 30, bottom: 25, left: 40, right: 20},
     onSelectRange,
-    selectedValues
+    selectedTypes
+  })
+
+  svgPie.call(pieChart, {
+    data: callData,
+    colourScale,
+    selectedTypes,
+    selectedReason,
+    dateRange,
+    pieOption,
+    onSelectType,
+    onSelectReason,
+    onPieOptionSelected
   })
 
 };
@@ -71,7 +105,8 @@ loadAndProcessData().then(loadedData => {
   states = loadedData[0];
   counties = loadedData[1];
   callData = loadedData[2];
-  dateRange = [callData[0].timeStamp, callData[100].timeStamp];
+  const date = new Date(callData[0].timeStamp.getFullYear(), callData[0].timeStamp.getMonth(), callData[0].timeStamp.getDate());
+  dateRange = [date, date];
   updateVis();
 });
 
