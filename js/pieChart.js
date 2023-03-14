@@ -34,7 +34,8 @@ const makePie = (parent, props) => {
   const arcG = chartEnter.merge(chart).selectAll('.arc').data(pie(data[1]));
   const arcGEnter = arcG.join('path')
     .attr('class', 'arc')
-    .attr('opacity', (d) => selectedTypes[data[0]] ? (!selectedReason || selectedReason===d.data[0] ? 1 : 0.5) : 0.2)
+    .attr('opacity', d => selectedTypes[data[0]] ? (!selectedReason || selectedReason===d.data[0] ? 1 : 0.5) : 0.2)
+    .attr('stroke', d => selectedTypes[data[0]] && selectedReason===d.data[0] ? 'black' : 'white')
     .attr('fill', colourScale(data[0]))
     .on('click', onSelectReason);
   arcGEnter.transition().duration(2000)
@@ -51,6 +52,7 @@ const makePie = (parent, props) => {
         .html(`
           <div class="tooltip-title">${d.data[0]}</div>
           <div><i class="tooltip-i">${d.data[1].length} Calls</i></div>
+          <div><i class="tooltip-i">${((d.endAngle - d.startAngle)/(2*Math.PI)*100).toFixed(2)}% of ${data[0]} Calls</i></div>
         `);
     })
     .on('mouseleave', () => {
@@ -91,7 +93,7 @@ export const pieChart = (parent, props) => {
       ])
   }
 
-  // define positions for each pi chart
+  // define positions for each pie chart
   const positions = [
     [width/4, height/4],
     [3*width/4, height/4],

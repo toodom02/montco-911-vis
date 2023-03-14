@@ -1,12 +1,12 @@
 export const areaChart = (parent, props) => {
-  // unpack my props
   const {
     data,
     colourScale,
     types,
     margin,
     onSelectRange,
-    selectedTypes
+    selectedTypes,
+    selectedReason
   } = props;
 
   const width = +parent.attr('width');
@@ -24,9 +24,9 @@ export const areaChart = (parent, props) => {
 
   // Count # of each incident type
   groupedData.forEach(d => {
-    const v = d[1]
+    const v = d[1];
     types.forEach(t => v[t] = 0);
-    v.forEach(i => v[i.type] = v[i.type] + 1);
+    v.forEach(i => {if (!selectedReason || selectedTypes[i.type] && i.reason===selectedReason) v[i.type] = v[i.type] + 1});
   })
 
   // stack data
@@ -38,9 +38,8 @@ export const areaChart = (parent, props) => {
 
   // Initialise scales
   const xScale = d3.scaleTime()
-    .domain(d3.extent(data, d => d.timeStamp))
-    .range([0, innerWidth])
-    .nice();
+    .domain(d3.extent(groupedData, d => d[0]))
+    .range([0, innerWidth]);
 
   // domain for yScale (to account for empty data)
   const upperDom = stackedData.length > 0 ? d3.max(stackedData[stackedData.length-1], d => d[1]) : 0;
@@ -154,6 +153,7 @@ export const areaChart = (parent, props) => {
           .style('top', (event.pageY + tooltipPadding) + 'px')
           .html(`
             <div class="tooltip-title">${d[0].data[0].toLocaleString("en-gb", {day:"numeric", month:"long", year:"numeric"})}</div>
+            <div><i class="tooltip-i">${!!selectedReason ? selectedTypesArr[0] + " - " + selectedReason : ''}</i></div>
             <div><i class="tooltip-i">${d[0].data[1]['Traffic']} Traffic calls</i></div>
             <div><i class="tooltip-i">${d[0].data[1]['EMS']} EMS calls</i></div>
             <div><i class="tooltip-i">${d[0].data[1]['Fire']} Fire calls</i></div>

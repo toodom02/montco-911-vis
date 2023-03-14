@@ -38,7 +38,8 @@ const svgArea = d3.select('svg#area');
 const svgPie = d3.select('svg#pie');
 
 // initialise globals
-let states, counties, callData, dateRange, selectedReason, pieOption;
+let states, counties, callData, dateRange, selectedReason;
+let pieOption = 'range';
 const types = ['Fire','EMS','Traffic'];
 const selectedTypes = types.reduce((o, key) => ({ ...o, [key]: true}), {});
 
@@ -75,6 +76,7 @@ const updateVis = () => {
     colourScale,
     onSelect : onSelectType,
     selectedTypes,
+    selectedReason,
     dateRange
   })
 
@@ -84,7 +86,8 @@ const updateVis = () => {
     types,
     margin: {top: 30, bottom: 25, left: 40, right: 20},
     onSelectRange,
-    selectedTypes
+    selectedTypes,
+    selectedReason
   })
 
   svgPie.call(pieChart, {

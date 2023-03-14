@@ -3,6 +3,7 @@ export const colourLegend = (parent, props) => {
     colourScale, 
     onSelect,
     selectedTypes,
+    selectedReason,
     dateRange
   } = props;
 
@@ -26,7 +27,7 @@ export const colourLegend = (parent, props) => {
       .attr('y', -circleRadius * 2)
       .attr('rx', circleRadius * 2)
       .attr('stroke', 'black')
-      .attr('width', 250)
+      .attr('width', 325)
       .attr('height', spacing * (colourScale.domain().length + 1) + circleRadius * 1.5);
 
   const groups = gEnter.merge(g).selectAll('.legend').data(colourScale.domain());
@@ -47,7 +48,7 @@ export const colourLegend = (parent, props) => {
   const text = groups.select('text');
   groupsEnter.append('text')
     .merge(text)
-      .text(d => d)
+      .text(d => (!selectedReason || !selectedTypes[d]) ? d : d + ` - ${selectedReason}`)
       .attr('x', textOffset)
       .attr('opacity', d => selectedTypes[d] ? 1 : 0.2);
 

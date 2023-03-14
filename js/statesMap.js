@@ -42,7 +42,7 @@ export const statesMap = (parent, props) => {
 
     chartEnter
       .transition().duration(5000)
-        .call(zoom.transform, d3.zoomIdentity.translate(-38500,-9250).scale(50));
+        .call(zoom.transform, d3.zoomIdentity.translate(-38400,-9250).scale(50));
 
     // Group for map elements
     const mapG = chart.select('.map');
@@ -56,7 +56,7 @@ export const statesMap = (parent, props) => {
       .on('click', () => 
         chartEnter.transition().duration(750).call(
           zoom.transform,
-          d3.zoomIdentity.translate(-38500,-9250).scale(50)
+          d3.zoomIdentity.translate(-38400,-9250).scale(50)
         ));
   
     // Paths for states
