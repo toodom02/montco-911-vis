@@ -1,5 +1,5 @@
 // Plots each 911 call individually
-export const pointsMap = (parent, props) => {
+export const symbolMap = (parent, props) => {
   const {
     filteredData,
     projection,

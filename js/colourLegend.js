@@ -14,6 +14,8 @@ export const colourLegend = (parent, props) => {
   const width  = +parent.attr('width');
   const height = +parent.attr('height');
 
+  const legendWidth = 300;
+
   // group for legend
   const g = parent.selectAll('.leg-container').data([null]);
   const gEnter = g.enter().append('g')
@@ -27,7 +29,7 @@ export const colourLegend = (parent, props) => {
       .attr('y', -circleRadius * 2)
       .attr('rx', circleRadius * 2)
       .attr('stroke', 'black')
-      .attr('width', 325)
+      .attr('width', legendWidth)
       .attr('height', spacing * (colourScale.domain().length + 1) + circleRadius * 1.5);
 
   const groups = gEnter.merge(g).selectAll('.legend').data(colourScale.domain());
@@ -50,7 +52,14 @@ export const colourLegend = (parent, props) => {
     .merge(text)
       .text(d => (!selectedReason || !selectedTypes[d]) ? d : d + ` - ${selectedReason}`)
       .attr('x', textOffset)
-      .attr('opacity', d => selectedTypes[d] ? 1 : 0.2);
+      .attr('opacity', d => selectedTypes[d] ? 1 : 0.2)
+      .style('font-size', '1em')
+      .style('font-size', (d,i,nodes) => {
+        // Scale down text to fit legend if necessary
+        const len = nodes[i].getComputedTextLength() + textOffset + circleRadius*4;
+        if (len < legendWidth) return `${1}em`;
+        return `${1 - (len / legendWidth - 1)}em`;
+      })
 
   // title with date range
   const textEnterText = g.select('.range-label');

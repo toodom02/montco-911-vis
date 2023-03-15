@@ -6,6 +6,7 @@ export const barChart = (parent, props) => {
     xTickLabels,
     yValue,
     colourScale,
+    selectedTypes
   } = props;
 
   const width = +parent.attr('width');
@@ -22,7 +23,7 @@ export const barChart = (parent, props) => {
 
   // Initialise scales
   const xScale = d3.scaleBand()
-    .domain(colourScale.domain())
+    .domain(Object.keys(selectedTypes).filter(key => selectedTypes[key]))
     .range([0, innerWidth])
     .paddingInner(0.2);
 

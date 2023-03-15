@@ -74,7 +74,8 @@ export const choroplethMap = (parent, props) => {
           xTickLabels: Object.keys(selectedTypes),
           yValue: d => d[1].length,
           yAxisLabel: '# Calls',
-          colourScale
+          colourScale,
+          selectedTypes
         });
       })
       .on('mousemove', (event, d) => {

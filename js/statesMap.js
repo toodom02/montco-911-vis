@@ -1,5 +1,5 @@
 import { choroplethMap } from "./choroplethMap.js";
-import { pointsMap } from "./pointsMap.js";
+import { symbolMap } from "./symbolMap.js";
 
 export const statesMap = (parent, props) => {
   const {
@@ -95,7 +95,7 @@ export const statesMap = (parent, props) => {
   if (mapOption==='points') {
     pointsG.selectAll('.municipality').remove();
     pointsGEnter.merge(pointsG).call(
-      pointsMap, {
+      symbolMap, {
         filteredData,
         projection,
         symbolScale,
