@@ -8,8 +8,11 @@ export const choroplethMap = (parent, props) => {
       selectedReason,
       municipalities,
       pathGenerator,
+      colourBlind,
       colourScale
     } = props;
+
+    const types = Object.keys(selectedTypes);
   
     // group points by station of call
     let groupedData = d3.groups(filteredData, d => d.twp);
@@ -18,10 +21,10 @@ export const choroplethMap = (parent, props) => {
   
     // Add num of events to our minicipal data
     municipalities.features.forEach(d => {
-      Object.keys(selectedTypes).forEach(key => d.properties[key] = 0);
+      types.forEach(key => d.properties[key] = 0);
       const groupelem = groupedData.find(g => d.properties.Name == g[0]);
       if (groupelem) groupelem[1].forEach(t => d.properties[t[0]] = t[1].length);
-      d.properties.total = d3.sum(Object.keys(selectedTypes).map(key => d.properties[key]));
+      d.properties.total = d3.sum(types.map(key => d.properties[key]));
     });
   
     const colours = colourScale.range()
@@ -36,7 +39,10 @@ export const choroplethMap = (parent, props) => {
       .transition().duration(1000)
         .attr('fill', d => {
           if (d.properties.total === 0) return 'white';
-            // Blend our 3 colours together for area colour, based on percentage of each type
+          // colour blind mode: only show dominant colour
+          if (colourBlind) return colourScale(types[d3.maxIndex(types, k => d.properties[k])]);
+
+          // Blend our 3 colours together for area colour, based on percentage of each type
           const redperc = d.properties.Fire / d.properties.total * 100;
           const blueperc = d.properties.EMS / d.properties.total * 100;
           const yellowperc = d.properties.Traffic / d.properties.total * 100;

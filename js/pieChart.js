@@ -34,8 +34,16 @@ const makePie = (parent, props) => {
   const arcG = chartEnter.merge(chart).selectAll('.arc').data(pie(data[1]));
   const arcGEnter = arcG.join('path')
     .attr('class', 'arc')
-    .attr('opacity', d => selectedTypes[data[0]] ? (!selectedReason || selectedReason===d.data[0] ? 1 : 0.5) : 0.2)
-    .attr('stroke', d => selectedTypes[data[0]] && selectedReason===d.data[0] ? 'black' : 'white')
+    .attr('opacity', d => {
+      if (d.data[1].length <= 0) return 0;
+      if (selectedTypes[data[0]]) {
+        return (!selectedReason || selectedReason===d.data[0] ? 1 : 0.5)
+      } else return 0.2;
+    })
+    .attr('stroke', d => {
+      if (d.data[1].length <= 0) return null;
+      return selectedTypes[data[0]] && selectedReason===d.data[0] ? 'black' : 'white';
+    })
     .attr('fill', colourScale(data[0]))
     .on('click', onSelectReason);
   arcGEnter.transition().duration(2000)
@@ -45,6 +53,8 @@ const makePie = (parent, props) => {
   const tooltipPadding = 15;
   arcGEnter
     .on('mousemove', (event, d) => {
+      // don't show tooltip if value 0
+      if (d.data[1].length <= 0) return;
       d3.select('#tooltip')
         .style('display', 'block')
         .style('left', (event.pageX + tooltipPadding) + 'px')   

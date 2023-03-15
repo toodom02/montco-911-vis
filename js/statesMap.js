@@ -12,6 +12,8 @@ export const statesMap = (parent, props) => {
     selectedReason,
     mapOption,
     onMapOptionSelected,
+    colourBlind,
+    onColourBlindSelected,
     colourScale,
     colourValue,
     symbolScale
@@ -82,6 +84,8 @@ export const statesMap = (parent, props) => {
   // Listener for radio button
   d3.selectAll('input[name="map-type"]')
     .on('change', onMapOptionSelected);
+  d3.selectAll('input[name="colourblind"]')
+    .on('change', onColourBlindSelected);
 
   const pointsG = chart.merge(g).selectAll('.points-g').data([null]);
   const pointsGEnter = pointsG.enter().append('g')
@@ -109,6 +113,7 @@ export const statesMap = (parent, props) => {
         selectedReason,
         municipalities,
         pathGenerator,
+        colourBlind,
         colourScale
       })
   }

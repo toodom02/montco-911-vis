@@ -12,11 +12,17 @@
       <div class="svg-container">
         <div class="map-area-container">
           <div class="radio-map">
-            <div class="radio-selection">
-              <input type="radio" id="regional" name="map-type" value="regional" title="Regional Choropleth Map" checked>
-              <label for="regional" title="Regional Choropleth Map">Regional</label>
-              <input type="radio" id="points" name="map-type" value="points" title="Plot Points on Map">
-              <label for="points" title="Plot Points on Map">Points</label>
+            <div class="option-selection">
+              <div class="radio-selection">
+                <input type="radio" id="regional" name="map-type" value="regional" title="Regional Choropleth Map" checked>
+                <label for="regional" title="Regional Choropleth Map">Regional</label>
+                <input type="radio" id="points" name="map-type" value="points" title="Plot Points on Map">
+                <label for="points" title="Plot Points on Map">Points</label>
+              </div>
+              <div class="colour-selection" title="Show only dominant colours">
+                <label for="colourblind">Colour Blind Mode</label>
+                <input type="checkbox" id="colourblind" name="colourblind">
+              </div>
             </div>
             <svg id="map" width="960" height="500"></svg>
           </div>

@@ -17,7 +17,9 @@ body {
     width: min-content;
 }
 
-.radio-selection {
+.option-selection {
+    display: flex;
+    justify-content: space-between;
     padding-bottom: 1rem;
 }
 
@@ -82,7 +84,7 @@ body {
     stroke-width: 0.05px;
 }
 
-.radio-selector {
+.radio-selection, .colour-selection {
     font-family: sans-serif;
     font-size: 1em;
     dominant-baseline: central;

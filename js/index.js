@@ -15,6 +15,7 @@ const onSelectReason = (event, d) => {
     selectedReason = null;
     Object.keys(selectedTypes).forEach(key => selectedTypes[key] = true)
   } else {
+    if (d.data[1].length <= 0) return;
     selectedReason = d.data[0];
     Object.keys(selectedTypes).forEach(key => selectedTypes[key] = d.data[1][0].type === key);
   }
@@ -43,13 +44,18 @@ const onMapOptionSelected = event => {
   updateVis();
 }
 
+const onColourBlindSelected = event => {
+  colourBlind = event.target.checked;
+  updateVis();
+}
+
 // select all our SVGs
 const svgMap = d3.select('svg#map');
 const svgArea = d3.select('svg#area');
 const svgPie = d3.select('svg#pie');
 
 // initialise globals
-let states, counties, municipalities, callData, dateRange, selectedReason;
+let states, counties, municipalities, callData, dateRange, selectedReason, colourBlind;
 let pieOption = 'range';
 let mapOption = 'regional';
 const types = ['Fire','EMS','Traffic'];
@@ -80,6 +86,8 @@ const updateVis = () => {
     selectedReason,
     mapOption,
     onMapOptionSelected,
+    colourBlind,
+    onColourBlindSelected,
     dateRange,
     colourScale,
     colourValue: d => d.type,
