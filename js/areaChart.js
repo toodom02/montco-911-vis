@@ -68,6 +68,19 @@ export const areaChart = (parent, props) => {
   const yAxisGEnter = chartEnter.append('g')
       .attr('class', 'axis y-axis');
 
+  const yAxisLabelText = yAxisG.select('.axis-label');
+  const yAxisLabelTextEnter = yAxisGEnter
+    .append('text')
+      .attr('class', 'axis-label')
+      .attr('y', -32)
+      .attr('fill', 'black')
+      .attr('transform', `rotate(-90)`)
+      .attr('text-anchor', 'middle');
+  yAxisLabelText
+    .merge(yAxisLabelTextEnter)
+      .attr('x', -innerHeight/2)
+      .text('# Calls');
+
   xAxisG.merge(xAxisGEnter).call(xAxis);
   yAxisG.merge(yAxisGEnter).transition().duration(1000).call(yAxis);
 
@@ -153,10 +166,10 @@ export const areaChart = (parent, props) => {
           .style('top', (event.pageY + tooltipPadding) + 'px')
           .html(`
             <div class="tooltip-title">${d[0].data[0].toLocaleString("en-gb", {day:'numeric', month:'long', year:'numeric'})}</div>
-            <div><i class="tooltip-i">${!!selectedReason ? selectedTypesArr[0] + ' - ' + selectedReason : ''}</i></div>
-            <div><i class="tooltip-i">${d[0].data[1]['Traffic']} Traffic calls</i></div>
-            <div><i class="tooltip-i">${d[0].data[1]['EMS']} EMS calls</i></div>
-            <div><i class="tooltip-i">${d[0].data[1]['Fire']} Fire calls</i></div>
+            <div><i class="tooltip-i">${selectedReason ? selectedTypesArr[0] + ' - ' + selectedReason : ''}</i></div>
+            ${Object.keys(selectedTypes).map(k =>
+              selectedReason && selectedTypesArr[0] != k ? '' : '<div><i class="tooltip-i">'+d[0].data[1][k]+' '+k+' calls</i></div>'
+            ).join('')}
         `);
       }
     });

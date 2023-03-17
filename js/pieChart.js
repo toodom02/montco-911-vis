@@ -9,6 +9,7 @@ const makePie = (parent, props) => {
     selectedReason,
     onSelectType,
     onSelectReason,
+    radius
   } = props;
 
   // chart group
@@ -27,8 +28,12 @@ const makePie = (parent, props) => {
   // make the pie chart
   const pie = d3.pie().value(d => d[1].length);
   const arc = d3.arc()
-    .innerRadius(50)
-    .outerRadius(100);
+    .innerRadius(radius / 2)
+    .outerRadius(radius);
+
+  const outerArc = d3.arc()
+    .innerRadius(radius)
+    .outerRadius(radius);
 
   // groups for arcs
   const arcG = chartEnter.merge(chart).selectAll('.arc').data(pie(data[1]));
@@ -47,7 +52,39 @@ const makePie = (parent, props) => {
     .attr('fill', colourScale(data[0]))
     .on('click', onSelectReason);
   arcGEnter.transition().duration(2000)
-      .attr('d', arc)
+      .attr('d', arc);
+
+  // text labels
+
+  // only label top 3 values
+  const labelData = (pie(data[1]).sort((a,b) => b.value - a.value)).slice(0,3)
+  const midAngle = (d) => d.startAngle + (d.endAngle - d.startAngle)/2;
+
+  const text = chartEnter.merge(chart).selectAll('.pie-text-labels').data(labelData, d => d.data[0]);
+  text.join('text')
+    .attr('class', 'pie-text-labels')
+    .attr('dy', '.35em')
+    .text(d => d.data[0])
+    .transition().duration(1000)
+      .attr('transform', d => {
+        const pos = outerArc.centroid(d);
+        pos[0] = radius * (midAngle(d) < Math.PI ? 1 : -1);
+        return `translate(${pos})`;
+      })
+      .attr('text-anchor', d => midAngle(d) < Math.PI ? 'start' : 'end');
+
+  text.exit().remove();
+
+  // arc to text polylines
+  const polyline = chartEnter.merge(chart).selectAll('.pie-label-line').data(labelData);
+  polyline.join('polyline')
+    .attr('class', 'pie-label-line')
+    .transition().duration(1000)
+      .attr('points', d => {
+        const pos = outerArc.centroid(d);
+        pos[0] = radius * 0.95 * (midAngle(d) < Math.PI ? 1 : -1);
+        return [arc.centroid(d), outerArc.centroid(d), pos];
+      });
 
   // Tooltip event listeners
   const tooltipPadding = 15;
@@ -103,12 +140,14 @@ export const pieChart = (parent, props) => {
       ])
   }
 
+  const radius = 100;
+
   // define positions for each pie chart
   const positions = [
-    [width/4, height/4],
-    [3*width/4, height/4],
-    [width/2, 3*height/4]
-  ]
+    [radius, height/4],
+    [2*radius + (width - 2*radius)/2, height/4],
+    [(radius + (2*radius + (width - 2*radius)/2)) / 2, 3*height/4]
+  ];
 
   // Listener for selector
   d3.select('#pie-selector')
@@ -123,8 +162,9 @@ export const pieChart = (parent, props) => {
       selectedTypes,
       selectedReason,
       onSelectType,
-      onSelectReason
+      onSelectReason,
+      radius
     })
-  })
+  });
 
 } 

@@ -15,9 +15,7 @@ export const barChart = (parent, props) => {
   const innerHeight = height - margin.top - margin.bottom;
 
   // Chart group
-  const chart = parent.selectAll('.barchart').data([null]);
-  const chartEnter = chart
-    .enter().append('g')
+  const chart = parent.append('g')
       .attr('class','barchart')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
@@ -44,25 +42,23 @@ export const barChart = (parent, props) => {
     .tickFormat(d3.format('d'))
 
   // Append empty x-axis group and move it to the bottom of the chart
-  const xAxisG = chartEnter
+  const xAxisG = chart
     .append('g')
       .attr('class','axis x-axis')
       .attr('transform', `translate(0,${innerHeight})`);
   xAxisG.call(xAxis);
 
   // Append y-axis group
-  const yAxisG = chartEnter
+  const yAxisG = chart
     .append('g')
       .attr('class','axis y-axis');
   yAxisG.call(yAxis);
     
   // Plot data
-  const bars = chartEnter.merge(chart)
-    .selectAll('.bar').data(data);
-  const barsEnter = bars
+  chart
+    .selectAll('.bar').data(data)
     .enter().append('rect')
-      .attr('class', 'bar');
-  barsEnter.merge(bars)
+      .attr('class', 'bar')
       .attr('x', d => xScale(xValue(d)))
       .attr('width', xScale.bandwidth())
       .attr('height', d => innerHeight - yScale(yValue(d)))
