@@ -30,7 +30,7 @@ const onSelectRange = (start,end) => {
 
 const onPieOptionSelected = event => {
   pieOption = event.target.value;
-  updateVis();
+  updatePie();
 }
 
 const onMapOptionSelected = event => {
@@ -41,12 +41,12 @@ const onMapOptionSelected = event => {
     return
   };
   mapOption = event.target.value;
-  updateVis();
+  updateMap();
 }
 
 const onColourBlindSelected = event => {
   colourBlind = event.target.checked;
-  updateVis();
+  if (mapOption==='regional') updateMap();
 }
 
 // select all our SVGs
@@ -75,8 +75,7 @@ const symbolScale = d3.scaleOrdinal()
     d3.symbol().type(d3.symbolDiamond).size(0.02)()
   ]);
 
-const updateVis = () => {
-
+const updateMap = () => {
   svgMap.call(statesMap, {
     states,
     counties,
@@ -92,26 +91,10 @@ const updateVis = () => {
     colourScale,
     colourValue: d => d.type,
     symbolScale
-  })
+  });
+}
 
-  svgMap.call(colourLegend, {
-    colourScale,
-    onSelect : onSelectType,
-    selectedTypes,
-    selectedReason,
-    dateRange
-  })
-
-  svgArea.call(areaChart, {
-    data: callData,
-    colourScale,
-    types,
-    margin: {top: 30, bottom: 25, left: 40, right: 20},
-    onSelectRange,
-    selectedTypes,
-    selectedReason
-  })
-
+const updatePie = () => {
   svgPie.call(pieChart, {
     data: callData,
     colourScale,
@@ -123,7 +106,31 @@ const updateVis = () => {
     onSelectReason,
     onPieOptionSelected
   })
+}
 
+const updateVis = () => {
+
+  updateMap();
+
+  svgMap.call(colourLegend, {
+    colourScale,
+    onSelect : onSelectType,
+    selectedTypes,
+    selectedReason,
+    dateRange
+  });
+
+  svgArea.call(areaChart, {
+    data: callData,
+    colourScale,
+    types,
+    margin: {top: 30, bottom: 25, left: 40, right: 20},
+    onSelectRange,
+    selectedTypes,
+    selectedReason
+  });
+
+  updatePie();
 };
 
 loadAndProcessData().then(loadedData => {

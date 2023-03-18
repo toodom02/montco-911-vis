@@ -14,10 +14,8 @@ export const choroplethMap = (parent, props) => {
 
     const types = Object.keys(selectedTypes);
   
-    // group points by station of call
-    let groupedData = d3.groups(filteredData, d => d.twp);
-    // group each station by type
-    groupedData = groupedData.map(t => [t[0],d3.groups(t[1], d => d.type)]);
+    // filter by township, then by type
+    const groupedData = d3.rollups(filteredData, v => v, d => d.twp, d => d.type);
   
     // Add num of events to our minicipal data
     municipalities.features.forEach(d => {
@@ -31,11 +29,12 @@ export const choroplethMap = (parent, props) => {
     const respectiveRGBs = colours.map(c => [parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)]);
   
     // Paths for municipalities
-    const municip = parent.selectAll('.municipality').data(municipalities.features);
+    const municip = parent.selectAll('.municipality').data(municipalities.features, d => d.properties.Name);
     const municipEnter = municip.enter().append('path')
       .attr('class','municipality');
-    municipEnter.merge(municip)
+    municipEnter
       .attr('d', pathGenerator)
+      .merge(municip)
       .transition().duration(1000)
         .attr('fill', d => {
           if (d.properties.total === 0) return 'white';

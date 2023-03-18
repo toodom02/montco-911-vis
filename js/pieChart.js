@@ -36,7 +36,7 @@ const makePie = (parent, props) => {
     .outerRadius(radius);
 
   // groups for arcs
-  const arcG = chartEnter.merge(chart).selectAll('.arc').data(pie(data[1]));
+  const arcG = chartEnter.merge(chart).selectAll('.arc').data(pie(data[1]), d => d.data[0]);
   const arcGEnter = arcG.join('path')
     .attr('class', 'arc')
     .attr('opacity', d => {
@@ -60,6 +60,7 @@ const makePie = (parent, props) => {
   const labelData = (pie(data[1]).sort((a,b) => b.value - a.value)).slice(0,3)
   const midAngle = (d) => d.startAngle + (d.endAngle - d.startAngle)/2;
 
+  // text label for segments
   const text = chartEnter.merge(chart).selectAll('.pie-text-labels').data(labelData, d => d.data[0]);
   text.join('text')
     .attr('class', 'pie-text-labels')
@@ -73,10 +74,8 @@ const makePie = (parent, props) => {
       })
       .attr('text-anchor', d => midAngle(d) < Math.PI ? 'start' : 'end');
 
-  text.exit().remove();
-
   // arc to text polylines
-  const polyline = chartEnter.merge(chart).selectAll('.pie-label-line').data(labelData);
+  const polyline = chartEnter.merge(chart).selectAll('.pie-label-line').data(labelData, d => d.data[0]);
   polyline.join('polyline')
     .attr('class', 'pie-label-line')
     .transition().duration(1000)
@@ -124,21 +123,15 @@ export const pieChart = (parent, props) => {
   const width  = +parent.attr('width');
   const height = +parent.attr('height');
 
-  // group data by type
-  let groupedData = d3.groups(data, d => d.type);
-  // group each type by reason
-  groupedData = groupedData.map(t => [t[0],d3.groups(t[1], d => d.reason)]);
-
   // Filter our dates if we only want range
-  if (pieOption === 'range') {
-    groupedData = groupedData.map(t => 
-      [t[0], t[1].map(s => 
-        [s[0], s[1].filter(d => {
-          const date = new Date(d.timeStamp.getFullYear(), d.timeStamp.getMonth(), d.timeStamp.getDate());
-          return date >= dateRange[0] && date <= dateRange[1]
-        })])
-      ])
-  }
+  const filteredData = pieOption === 'total' ? data : 
+    data.filter(d => {
+      const date = new Date(d.timeStamp.getFullYear(), d.timeStamp.getMonth(), d.timeStamp.getDate());
+      return date >= dateRange[0] && date <= dateRange[1]
+    })
+
+  // Group by type, then by reason
+  const groupedData = d3.rollups(filteredData, v => v, d => d.type, d => d.reason);
 
   const radius = 100;
 

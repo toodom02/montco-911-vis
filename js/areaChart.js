@@ -25,8 +25,9 @@ export const areaChart = (parent, props) => {
   // Count # of each incident type
   groupedData.forEach(d => {
     const v = d[1];
-    types.forEach(t => v[t] = 0);
-    v.forEach(i => {if (!selectedReason || selectedTypes[i.type] && i.reason===selectedReason) v[i.type] = v[i.type] + 1});
+    types.forEach(t => 
+        v[t] = v.reduce((n,x) => n+(x.type===t && (!selectedReason || x.reason===selectedReason)), 0)
+    );
   })
 
   // stack data
@@ -93,12 +94,17 @@ export const areaChart = (parent, props) => {
   const areasGEnter = areasG.join('g')
       .attr('class', 'areas');
 
-  const cats = areasGEnter.merge(areasG).selectAll('.area-path').data(stackedData);
-  cats.join('path')
+  const cats = areasGEnter.merge(areasG).selectAll('.area-path').data(stackedData, d => d.key);
+  const catsEnter = cats.enter().append('path')
     .attr('class', 'area-path')
+    .attr('opacity', 0);
+  catsEnter.merge(cats)
     .transition().duration(1000)
+      .attr('opacity', 1)
       .attr('d', d => areaGenerator(d))
       .attr('fill', d => colourScale(d.key));
+
+  cats.exit().transition().duration(1000).attr('opacity', 0).remove();
 
   // Brush selection to choose timeframe
   const brush = d3.brushX()

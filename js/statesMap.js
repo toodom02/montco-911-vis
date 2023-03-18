@@ -70,13 +70,13 @@ export const statesMap = (parent, props) => {
       ));
 
   // Paths for states
-  mapG.merge(g).selectAll('.state').data(states.features)
+  mapG.merge(g).selectAll('.state').data(states.features, d => d.id)
     .join('path')
       .attr('class','state')
       .attr('d', pathGenerator);
 
   // Paths for counties
-  mapG.merge(g).selectAll('.county').data(counties.features)
+  mapG.merge(g).selectAll('.county').data(counties.features, d => d.id)
     .join('path')
       .attr('class','county')
       .attr('d', pathGenerator);
@@ -89,7 +89,7 @@ export const statesMap = (parent, props) => {
 
   const pointsG = chart.merge(g).selectAll('.points-g').data([null]);
   const pointsGEnter = pointsG.enter().append('g')
-      .attr('class', 'points-g')
+      .attr('class', 'points-g');
 
   // depending on selection, call appropriate map plot and delete previous
   if (mapOption==='points') {
@@ -100,9 +100,7 @@ export const statesMap = (parent, props) => {
         projection,
         symbolScale,
         colourScale,
-        colourValue,
-        pointsG,
-        pointsGEnter
+        colourValue
       })
   } else {
     pointsG.selectAll('.call').remove();

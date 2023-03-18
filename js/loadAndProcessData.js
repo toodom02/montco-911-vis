@@ -14,13 +14,15 @@ export const loadAndProcessData = () =>
         d.properties.Name = d.properties.Name.toUpperCase().replace('TWP','TOWNSHIP');
       })
       // Parse CSV data 
-      csvData.forEach(d => {
+      csvData.forEach((d,i) => {
         d.timeStamp = new Date(d.timeStamp);
         d.lat = +d.lat;
         d.lng = +d.lng;
         let title = d.title.split(':');
         d.type = title[0].trim();
         d.reason = title[1].replace('-','').trim().toUpperCase();
+        // add identifier key
+        d.key = i;
       });   
 
       // Return array containing GeoJSONs and csv data

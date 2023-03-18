@@ -9,7 +9,7 @@ export const symbolMap = (parent, props) => {
   } = props;
 
   // 911 Calls
-  const calls = parent.selectAll('.call').data(filteredData, d=>d);
+  const calls = parent.selectAll('.call').data(filteredData, d => d.key);
   const callsEnter = calls.enter()
     .append('path')
     .attr('class', 'call')
