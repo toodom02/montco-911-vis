@@ -125,10 +125,7 @@ export const pieChart = (parent, props) => {
 
   // Filter our dates if we only want range
   const filteredData = pieOption === 'total' ? data : 
-    data.filter(d => {
-      const date = new Date(d.timeStamp.getFullYear(), d.timeStamp.getMonth(), d.timeStamp.getDate());
-      return date >= dateRange[0] && date <= dateRange[1]
-    })
+    data.filter(d => d.date >= dateRange[0] && d.date <= dateRange[1])
 
   // Group by type, then by reason
   const groupedData = d3.rollups(filteredData, v => v, d => d.type, d => d.reason);
@@ -138,8 +135,8 @@ export const pieChart = (parent, props) => {
   // define positions for each pie chart
   const positions = [
     [radius, height/4],
-    [2*radius + (width - 2*radius)/2, height/4],
-    [(radius + (2*radius + (width - 2*radius)/2)) / 2, 3*height/4]
+    [9/4*radius + (width - 2*radius)/2, height/4],
+    [(radius + (9/4*radius + (width - 2*radius)/2)) / 2, 3*height/4]
   ];
 
   // Listener for selector

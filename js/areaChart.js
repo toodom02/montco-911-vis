@@ -20,7 +20,7 @@ export const areaChart = (parent, props) => {
   const yValue = d => d[1];
 
   // Group data by date
-  const groupedData = d3.groups(data, d => new Date(d.timeStamp.getFullYear(), d.timeStamp.getMonth(), d.timeStamp.getDate()));
+  const groupedData = d3.groups(data, d => d.date);
 
   // Count # of each incident type
   groupedData.forEach(d => {

@@ -1,5 +1,5 @@
 import { loadAndProcessData } from './loadAndProcessData.js'
-import { statesMap } from './statesMap.js'
+import StatesMap from './statesMap.js'
 import { colourLegend } from './colourLegend.js';
 import { areaChart } from './areaChart.js';
 import { pieChart } from './pieChart.js';
@@ -11,7 +11,8 @@ const onSelectType = (event, d) => {
 }
 
 const onSelectReason = (event, d) => {
-  if (selectedReason === d.data[0]) {
+  // if already selected, unselect.
+  if (selectedReason === d.data[0] && selectedTypes[d.data[1][0].type]) {
     selectedReason = null;
     Object.keys(selectedTypes).forEach(key => selectedTypes[key] = true)
   } else {
@@ -55,7 +56,7 @@ const svgArea = d3.select('svg#area');
 const svgPie = d3.select('svg#pie');
 
 // initialise globals
-let states, counties, municipalities, callData, dateRange, selectedReason, colourBlind;
+let states, counties, municipalities, callData, dateRange, selectedReason, colourBlind, statesMap;
 let pieOption = 'range';
 let mapOption = 'regional';
 const types = ['Fire','EMS','Traffic'];
@@ -76,22 +77,11 @@ const symbolScale = d3.scaleOrdinal()
   ]);
 
 const updateMap = () => {
-  svgMap.call(statesMap, {
-    states,
-    counties,
-    municipalities,
-    data : callData,
-    selectedTypes,
-    selectedReason,
-    mapOption,
-    onMapOptionSelected,
-    colourBlind,
-    onColourBlindSelected,
-    dateRange,
-    colourScale,
-    colourValue: d => d.type,
-    symbolScale
-  });
+  // need to update changed props, since passed by value.
+  statesMap.props.colourBlind = colourBlind;
+  statesMap.props.selectedReason = selectedReason;
+  statesMap.props.mapOption = mapOption;
+  statesMap.updateVis();
 }
 
 const updatePie = () => {
@@ -138,8 +128,24 @@ loadAndProcessData().then(loadedData => {
   counties = loadedData[1];
   municipalities = loadedData[2];
   callData = loadedData[3];
-  const date = new Date(callData[0].timeStamp.getFullYear(), callData[0].timeStamp.getMonth(), callData[0].timeStamp.getDate());
-  dateRange = [date, date];
+  dateRange = [callData[0].date, callData[0].date];
+
+  statesMap = new StatesMap(svgMap, {
+    states,
+    counties,
+    municipalities,
+    data : callData,
+    selectedTypes,
+    selectedReason,
+    mapOption,
+    onMapOptionSelected,
+    colourBlind,
+    onColourBlindSelected,
+    dateRange,
+    colourScale,
+    colourValue: d => d.type,
+    symbolScale
+  })
   updateVis();
 });
 

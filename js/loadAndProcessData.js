@@ -16,6 +16,8 @@ export const loadAndProcessData = () =>
       // Parse CSV data 
       csvData.forEach((d,i) => {
         d.timeStamp = new Date(d.timeStamp);
+        // get only date (ignore time)
+        d.date = new Date(d.timeStamp.getFullYear(), d.timeStamp.getMonth(), d.timeStamp.getDate());
         d.lat = +d.lat;
         d.lng = +d.lng;
         let title = d.title.split(':');

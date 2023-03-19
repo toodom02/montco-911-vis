@@ -34,8 +34,10 @@ export const choroplethMap = (parent, props) => {
       .attr('class','municipality');
     municipEnter
       .attr('d', pathGenerator)
+      .attr('opacity', 0)
       .merge(municip)
       .transition().duration(1000)
+        .attr('opacity', 1)
         .attr('fill', d => {
           if (d.properties.total === 0) return 'white';
           // colour blind mode: only show dominant colour
@@ -51,6 +53,9 @@ export const choroplethMap = (parent, props) => {
           const blue = Math.round((respectiveRGBs[0][2] * redperc + respectiveRGBs[1][2] * blueperc + respectiveRGBs[2][2] * yellowperc) / totalperc);  
           return `rgb(${red},${green},${blue})`
         });
+    municip.exit()
+      .transition().duration(1000)
+        .attr('opacity', 0).remove();
   
     // Tooltip event listeners
     const tooltipPadding = 15;
