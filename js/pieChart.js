@@ -37,22 +37,36 @@ const makePie = (parent, props) => {
 
   // groups for arcs
   const arcG = chartEnter.merge(chart).selectAll('.arc').data(pie(data[1]), d => d.data[0]);
-  const arcGEnter = arcG.join('path')
-    .attr('class', 'arc')
+  const arcGEnter = arcG.enter().append('path')
+    .attr('class', 'arc');
+  arcGEnter.merge(arcG)
     .attr('opacity', d => {
-      if (d.data[1].length <= 0) return 0;
       if (selectedTypes[data[0]]) {
         return (!selectedReason || selectedReason===d.data[0] ? 1 : 0.5)
       } else return 0.2;
     })
-    .attr('stroke', d => {
-      if (d.data[1].length <= 0) return null;
-      return selectedTypes[data[0]] && selectedReason===d.data[0] ? 'black' : 'white';
-    })
+    .attr('stroke', d => 
+      selectedTypes[data[0]] && selectedReason===d.data[0] ? 'black' : 'white'
+    )
     .attr('fill', colourScale(data[0]))
     .on('click', onSelectReason);
-  arcGEnter.transition().duration(2000)
-      .attr('d', arc);
+
+  // custom transition function for arcs (otherwise errors)
+  arcGEnter.merge(arcG).transition().duration(1000)
+    .attrTween('d', (d,i,nodes) => {
+        // Seems like a bug in d3, when attrTween called over unchanged data it
+        // stalls for ~5 seconds. To solve, we catch when data is (mostly) unchanged
+        // and return basic arc.
+      if (nodes[i]._current && 
+          Math.abs(d.startAngle - nodes[i]._current.startAngle) < 0.15 && 
+          Math.abs(d.endAngle - nodes[i]._current.endAngle) < 0.15) {
+        return () => arc(d)
+      }
+      const j = d3.interpolate(nodes[i]._current, d);
+      nodes[i]._current = j(0);
+      return t => arc(j(t));
+    })
+  arcG.exit().remove();
 
   // text labels
 
@@ -60,37 +74,48 @@ const makePie = (parent, props) => {
   const labelData = (pie(data[1]).sort((a,b) => b.value - a.value)).slice(0,3)
   const midAngle = (d) => d.startAngle + (d.endAngle - d.startAngle)/2;
 
-  // text label for segments
-  const text = chartEnter.merge(chart).selectAll('.pie-text-labels').data(labelData, d => d.data[0]);
-  text.join('text')
+  // group for label and line
+  const labelG = chartEnter.merge(chart).selectAll('.pie-label-group').data(labelData, d => d.data[0]);
+  const labelGEnter = labelG.enter().append('g')
+    .attr('class', 'pie-label-group');
+  labelG.exit().remove();
+
+  // append label
+  const labelText = labelG.select('.pie-text-labels');
+  const labelTextEnter = labelGEnter.append('text')
     .attr('class', 'pie-text-labels')
     .attr('dy', '.35em')
-    .text(d => d.data[0])
+    .attr('opacity', 0)
+    .text(d => d.data[0]);
+  // make label transition nicely to center of arc
+  labelText.merge(labelTextEnter)
     .transition().duration(1000)
+      .attr('opacity', 1)
       .attr('transform', d => {
         const pos = outerArc.centroid(d);
         pos[0] = radius * (midAngle(d) < Math.PI ? 1 : -1);
         return `translate(${pos})`;
       })
       .attr('text-anchor', d => midAngle(d) < Math.PI ? 'start' : 'end');
+  labelText.exit().remove();
 
   // arc to text polylines
-  const polyline = chartEnter.merge(chart).selectAll('.pie-label-line').data(labelData, d => d.data[0]);
-  polyline.join('polyline')
+  const polyline = labelG.select('.pie-label-line');
+  const polylineEnter = labelGEnter.append('polyline')
     .attr('class', 'pie-label-line')
+  polyline.merge(polylineEnter)
     .transition().duration(1000)
       .attr('points', d => {
         const pos = outerArc.centroid(d);
         pos[0] = radius * 0.95 * (midAngle(d) < Math.PI ? 1 : -1);
         return [arc.centroid(d), outerArc.centroid(d), pos];
       });
+  polyline.exit().remove();
 
   // Tooltip event listeners
   const tooltipPadding = 15;
   arcGEnter
     .on('mousemove', (event, d) => {
-      // don't show tooltip if value 0
-      if (d.data[1].length <= 0) return;
       d3.select('#tooltip')
         .style('display', 'block')
         .style('left', (event.pageX + tooltipPadding) + 'px')   
@@ -133,6 +158,7 @@ export const pieChart = (parent, props) => {
   const radius = 100;
 
   // define positions for each pie chart
+  // (not centered, to allow for labels on rhs)
   const positions = [
     [radius, height/4],
     [9/4*radius + (width - 2*radius)/2, height/4],

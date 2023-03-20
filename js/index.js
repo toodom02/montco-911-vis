@@ -6,6 +6,10 @@ import { pieChart } from './pieChart.js';
 
 const onSelectType = (event, d) => {
   selectedTypes[d] = !selectedTypes[d];
+  // if none selected, reset to all selected
+  if (Object.keys(selectedTypes).every(key => !selectedTypes[key])) {
+    Object.keys(selectedTypes).forEach(key => selectedTypes[key] = true)
+  }
   selectedReason = null;
   updateVis();
 }
