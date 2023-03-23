@@ -61,7 +61,7 @@ const svgPie = d3.select('svg#pie');
 
 // initialise globals
 let states, counties, municipalities, callData, dateRange, selectedReason, colourBlind, statesMap;
-let pieOption = 'range';
+let pieOption = 'group';
 let mapOption = 'regional';
 const types = ['Fire','EMS','Traffic'];
 const selectedTypes = types.reduce((o, key) => ({ ...o, [key]: true}), {});

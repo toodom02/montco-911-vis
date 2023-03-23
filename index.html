@@ -29,11 +29,11 @@
           <svg id="area" width="960" height="150"></svg>
         </div>
         <div class="pie-chart-container">
-          <span id="pie-selector" title="Select whether pie charts show total data, or only the selected time range">
-            Pie Data:
+          <span id="pie-selector" title="Select whether pie charts group segments of < 1%">
+            Pie Chart Option:
             <select>
-              <option value="range">Range</option>
-              <option value="total">Total</option>
+              <option value="group">Group Small Values</option>
+              <option value="ungroup">Show Small Values</option>
             </select>
           </span>
           <svg id="pie" width="650" height="650"></svg>
@@ -46,7 +46,7 @@
         <br/>
         Source: County Boundary Data from <a href="https://www.pasda.psu.edu/uci/DataSummary.aspx?dataset=24">pasda.psu.edu</a>
         <br/>
-        Source: US Albers State Data from <a href="https://github.com/topojson/us-atlas">Census Bureau</a>
+        Source: US Albers State Data from <a href="https://github.com/topojson/us-atlas">github.com</a>
       </div>
     </div>
     <div id="tooltip"></div>

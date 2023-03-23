@@ -26,7 +26,7 @@ const makePie = (parent, props) => {
     .on('click', (e) => onSelectType(e, data[0]))
 
   // make the pie chart
-  const pie = d3.pie().value(d => d[1].length);
+  const pie = d3.pie().sort((a,b) => a[0]==='OTHER' ? 1 : (b.value - a.value)).value(d => d.value);
   const arc = d3.arc()
     .innerRadius(radius / 2)
     .outerRadius(radius);
@@ -49,7 +49,7 @@ const makePie = (parent, props) => {
       selectedTypes[data[0]] && selectedReason===d.data[0] ? 'black' : 'white'
     )
     .attr('fill', colourScale(data[0]))
-    .on('click', onSelectReason);
+    .on('click', (e,d) => d.data[0]!='OTHER' ? onSelectReason(e,d) : null);
 
   // custom transition function for arcs (otherwise errors)
   arcGEnter.merge(arcG).transition().duration(1000)
@@ -103,6 +103,7 @@ const makePie = (parent, props) => {
   const polyline = labelG.select('.pie-label-line');
   const polylineEnter = labelGEnter.append('polyline')
     .attr('class', 'pie-label-line')
+    .style('pointer-events', 'none');
   polyline.merge(polylineEnter)
     .transition().duration(1000)
       .attr('points', d => {
@@ -115,16 +116,22 @@ const makePie = (parent, props) => {
   // Tooltip event listeners
   const tooltipPadding = 15;
   arcGEnter
-    .on('mousemove', (event, d) => {
+    .on('mouseover', (event, d) => {
       d3.select('#tooltip')
         .style('display', 'block')
-        .style('left', (event.pageX + tooltipPadding) + 'px')   
-        .style('top', (event.pageY + tooltipPadding) + 'px')
         .html(`
           <div class="tooltip-title">${d.data[0]}</div>
-          <div><i class="tooltip-i">${d.data[1].length} Calls</i></div>
+          <div><i class="tooltip-i">${d.data.value} Calls</i></div>
           <div><i class="tooltip-i">${((d.endAngle - d.startAngle)/(2*Math.PI)*100).toFixed(2)}% of ${data[0]} Calls</i></div>
+          ${d.data[0]==='OTHER' ?
+            '<table>' +
+            d.data[1].map(t => '<tr><td>'+ t.value + '</td><td> - ' + t[0] + '</td></tr>').join('') + '</table>' : ''}
         `);
+    })
+    .on('mousemove', (event, d) => {
+      d3.select('#tooltip')
+        .style('left', (event.pageX + tooltipPadding) + 'px')   
+        .style('top', (event.pageY + tooltipPadding) + 'px')
     })
     .on('mouseleave', () => {
       d3.select('#tooltip').style('display', 'none');
@@ -149,11 +156,35 @@ export const pieChart = (parent, props) => {
   const height = +parent.attr('height');
 
   // Filter our dates if we only want range
-  const filteredData = pieOption === 'total' ? data : 
-    data.filter(d => d.date >= dateRange[0] && d.date <= dateRange[1])
+  const filteredData = data.filter(d => d.date >= dateRange[0] && d.date <= dateRange[1])
 
   // Group by type, then by reason
-  const groupedData = d3.rollups(filteredData, v => v, d => d.type, d => d.reason);
+  let groupedData = d3.rollups(filteredData, v => v, d => d.type, d => d.reason);
+
+  // calculate total reasons for each type
+  groupedData.forEach(t => {
+    t.total = 0;
+    t[1].forEach(d => {
+      d.value = d[1].length
+      t.total += d.value;
+    })
+  })
+
+  // largest % to show in pie chart
+  const threshold = 0.01;
+
+  if (pieOption === 'group') {
+    // find any reasons with <1% share, and group together under 'OTHER'
+    groupedData = groupedData.map(t => {
+      const big_items = t[1].filter(d => d.value / t.total > threshold);
+      const other = ['OTHER', t[1].filter(d => d.value / t.total <= threshold).sort((a,b) => b.value-a.value)];
+      other.value = d3.sum(other[1], d => d.value)
+      if (other.value > 1) {
+        big_items.push(other);
+        return [t[0], big_items];
+      } else return t;
+    })
+  }
 
   const radius = 100;
 
