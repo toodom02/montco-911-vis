@@ -14,7 +14,7 @@ export const choroplethMap = (parent, props) => {
 
     const types = Object.keys(selectedTypes);
   
-    // filter by township, then by type
+    // group by township, then by type
     const groupedData = d3.rollups(filteredData, v => v, d => d.twp, d => d.type);
   
     // Add num of events to our minicipal data
@@ -58,11 +58,12 @@ export const choroplethMap = (parent, props) => {
         .attr('opacity', 0).remove();
   
     // Tooltip event listeners
+    const tooltip = d3.select('#tooltip');
     const tooltipPadding = 15;
     municipEnter.merge(municip)
       .on('mouseenter', (event, d) => {
         const barData = groupedData.find(dat => dat[0]==d.properties.Name);
-        d3.select('#tooltip')
+        tooltip
           .html(`
           <div class="tooltip-title">${d.properties.Name}</div>
           ${selectedReason ? '<div><i class="tooltip-i">' + selectedReason + '</i></div>' : ''}
@@ -83,13 +84,13 @@ export const choroplethMap = (parent, props) => {
         });
       })
       .on('mousemove', (event, d) => {
-        d3.select('#tooltip')
+        tooltip
           .style('display', 'block')
           .style('left', (event.pageX + tooltipPadding) + 'px')   
           .style('top', (event.pageY + tooltipPadding) + 'px')
       })
       .on('mouseleave', () => {
-        d3.select('#tooltip').style('display', 'none');
+        tooltip.style('display', 'none');
       });
   
   }

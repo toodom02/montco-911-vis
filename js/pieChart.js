@@ -38,7 +38,7 @@ const makePie = (parent, props) => {
   // groups for arcs
   const arcG = chartEnter.merge(chart).selectAll('.arc').data(pie(data[1]), d => d.data[0]);
   const arcGEnter = arcG.enter().append('path')
-    .attr('class', 'arc');
+    .attr('class', d => `${d.data[0] === 'OTHER' ? 'other-arc' : ''} arc`);
   arcGEnter.merge(arcG)
     .attr('opacity', d => {
       if (selectedTypes[data[0]]) {
@@ -114,27 +114,28 @@ const makePie = (parent, props) => {
   polyline.exit().remove();
 
   // Tooltip event listeners
+  const tooltip = d3.select('#tooltip');
   const tooltipPadding = 15;
   arcGEnter
     .on('mouseover', (event, d) => {
-      d3.select('#tooltip')
+      tooltip
         .style('display', 'block')
         .html(`
           <div class="tooltip-title">${d.data[0]}</div>
           <div><i class="tooltip-i">${d.data.value} Calls</i></div>
           <div><i class="tooltip-i">${((d.endAngle - d.startAngle)/(2*Math.PI)*100).toFixed(2)}% of ${data[0]} Calls</i></div>
           ${d.data[0]==='OTHER' ?
-            '<table>' +
+            '<table class="tooltip-table">' +
             d.data[1].map(t => '<tr><td>'+ t.value + '</td><td> - ' + t[0] + '</td></tr>').join('') + '</table>' : ''}
         `);
     })
     .on('mousemove', (event, d) => {
-      d3.select('#tooltip')
+      tooltip
         .style('left', (event.pageX + tooltipPadding) + 'px')   
         .style('top', (event.pageY + tooltipPadding) + 'px')
     })
     .on('mouseleave', () => {
-      d3.select('#tooltip').style('display', 'none');
+      tooltip.style('display', 'none');
     });
 }
 

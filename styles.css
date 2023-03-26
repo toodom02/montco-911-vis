@@ -86,6 +86,10 @@ body {
     dominant-baseline: central;
 }
 
+.option-selection input, .option-selection label {
+    cursor: pointer;
+}
+
 /* LEGEND */
 
 .legend-bg {
@@ -126,6 +130,10 @@ body {
 .arc:hover {
     stroke: black;
     stroke-width: 2px;
+}
+
+.other-arc {
+    cursor: default;
 }
 
 .pie-label {
@@ -180,6 +188,12 @@ body {
     color: #000;
     font-size: 14px;
     font-weight: 600;
+}
+
+/* pie chart other tooltip */
+
+.tooltip-table {
+    font-size: 11px;
 }
 
 /* Area chart tooltips */

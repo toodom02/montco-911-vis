@@ -27,10 +27,11 @@ export const symbolMap = (parent, props) => {
     .remove();
 
   // Tooltip event listeners
+  const tooltip = d3.select('#tooltip');
   const tooltipPadding = 15;
   callsEnter
     .on('mouseover', (event, d) => {
-      d3.select('#tooltip')
+      tooltip
         .style('display', 'block')
         .style('left', (event.pageX + tooltipPadding) + 'px')   
         .style('top', (event.pageY + tooltipPadding) + 'px')
@@ -40,6 +41,6 @@ export const symbolMap = (parent, props) => {
         `);
     })
     .on('mouseleave', () => {
-      d3.select('#tooltip').style('display', 'none');
+      tooltip.style('display', 'none');
     });
 }
