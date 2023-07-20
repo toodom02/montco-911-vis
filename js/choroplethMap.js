@@ -1,4 +1,4 @@
-import { barChart } from "./barchart.js";
+import { barChart } from "./barChart.js";
 
 // choropleth map based on 911 calls in municipal area
 export const choroplethMap = (parent, props) => {
